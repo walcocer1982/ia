@@ -1,0 +1,27 @@
+﻿{
+    "name": "sophia-lesson-cli",
+    "version": "0.1.0",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "start": "node --import tsx --env-file=.env src/cli/lesson-terminal.ts",
+        "lesson": "node --import tsx --env-file=.env src/cli/lesson-terminal.ts",
+        "chat": "node --import tsx --env-file=.env src/cli/chat-terminal.ts",
+        "plan": "node --import tsx --env-file=.env src/cli/plan-lesson-terminal.ts",
+        "lint": "eslint .",
+        "test": "vitest",
+        "build": "tsc -p tsconfig.json"
+    },
+    "dependencies": {
+        "dotenv": "^17.2.2",
+        "openai": "^4.56.0",
+        "zod": "^3.23.8"
+    },
+    "devDependencies": {
+        "@types/node": "^22.5.0",
+        "eslint": "^8.57.0",
+        "tsx": "^3.12.9",
+        "typescript": "^5.6.3",
+        "vitest": "^2.1.0"
+    }
+}
