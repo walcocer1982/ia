@@ -47,7 +47,7 @@ export const lesson01 = {
                 {
                     code: 'M2-Q01',
                     type: 'ASK',
-                    question: 'Al mirar esta escena de soldadura, que detalles te llaman la atencion como posibles peligros?',
+                    question: 'Al mirar esta escena de soldadura, que peligros especificos te vienen a la mente de tus experiencias: chispas que pueden provocar quemaduras, radiacion que danara la vista, humos metalicos que afectan la respiracion? Como te ayudo detectarlos al instante para colocar pantallas, reforzar la ventilacion o ajustarte el EPP y evitar incidentes?',
                     objective: 'Activar recuerdos y experiencias previas sobre peligros frecuentes en trabajos de soldadura.',
                     answerType: 'open',
                     image: {
