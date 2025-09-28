@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { AskStep, Lesson } from './lesson.js';
+import type { Lesson } from './lesson.js';
 
 export const interactionLogSchema = z.object({
   timestamp: z.string().datetime(),
@@ -40,16 +40,4 @@ export function createInitialSession(lesson: Lesson, sessionId: string): LessonS
     lessonCompleted: false,
     history: []
   };
-}
-
-export function findCurrentStep(session: LessonSession): AskStep | null {
-  const moment = session.lesson.moments[session.currentMomentIndex];
-  if (!moment) {
-    return null;
-  }
-  const step = moment.steps[session.currentStepIndex];
-  if (!step || step.type !== 'ASK') {
-    return null;
-  }
-  return step;
 }
