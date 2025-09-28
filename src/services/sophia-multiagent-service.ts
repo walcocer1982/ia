@@ -141,7 +141,7 @@ export class SophiaMultiAgentService {
   }
 
   private buildSnapshot(session: LessonSession, moment: Moment, step: AskStep): PersonalitySnapshot {
-    const historyForStep = session.history.filter(entry => entry.stepCode === step.code);
+    const historyForStep = session.history.filter((entry: InteractionLog) => entry.stepCode === step.code);
     const lastEntry = session.history.at(-1);
 
     return {
