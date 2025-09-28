@@ -61,14 +61,3 @@ export function createInitialSession(lesson, sessionId) {
         history: []
     };
 }
-export function findCurrentStep(session) {
-    const moment = session.lesson.moments[session.currentMomentIndex];
-    if (!moment) {
-        return null;
-    }
-    const step = moment.steps[session.currentStepIndex];
-    if (!step || step.type !== 'ASK') {
-        return null;
-    }
-    return step;
-}
