@@ -33,6 +33,7 @@ export const askStepSchema = baseStepSchema.extend({
         z.literal('list'),
         z.literal('procedure')
     ]),
+    modelAnswer: z.string().min(1).optional(),
     image: imageSchema.optional()
 });
 export const contentStepSchema = baseStepSchema.extend({

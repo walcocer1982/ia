@@ -31,6 +31,7 @@ export const lesson01 = {
                     type: 'ASK',
                     question: 'Si se lo explicas a un colega nuevo, como describirias un peligro y por que vale la pena detectarlo a tiempo?',
                     objective: 'Explorar por que conviene identificar peligros con anticipacion y reflexionar sobre su importancia en el dia a dia.',
+                    modelAnswer: 'Un peligro es cualquier condicion, objeto o accion que tiene el potencial real de causarnos dano; por ejemplo, un cable pelado que deja expuestos los conductores. Si alguien lo toca podria sufrir una descarga electrica seria o quemaduras, y al detectarlo a tiempo podemos aislarlo, avisar al equipo y evitar que el accidente o una lesion llegue a ocurrir.',
                     answerType: 'open',
                     image: {
                         url: 'https://www.levelset.com/wp-content/uploads/2019/02/bigstock-201485356-600x400.jpg',
