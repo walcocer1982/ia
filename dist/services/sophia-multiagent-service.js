@@ -91,7 +91,7 @@ export class SophiaMultiAgentService {
         };
     }
     buildSnapshot(session, moment, step) {
-        const historyForStep = session.history.filter(entry => entry.stepCode === step.code);
+        const historyForStep = session.history.filter((entry) => entry.stepCode === step.code);
         const lastEntry = session.history.at(-1);
         return {
             lesson: session.lesson,
@@ -162,23 +162,29 @@ function buildEvaluationGuidelines(objective, attempts) {
     lines.push(describeHintStage(attempts));
     lines.push('');
     lines.push('Reporta weakAreas con lo que falto del objetivo y alinea nextAction con el progreso.');
+    lines.push('');
+    lines.push('GUIA_OPERATIVA_FACILITADORES');
+    lines.push('- Intentos 1 y 2: se permite seguir preguntando porque nextAction debe mantenerse en "retry" con pistas cada vez más ricas.');
+    lines.push('- Intento 3: se cierra el paso; el sistema prepara resumen, marca needsAutomaticAdvance=true y avanza automáticamente.');
     return lines.join(String.fromCharCode(10));
 }
 function describeHintStage(attempts) {
     if (attempts <= 1) {
         return `Intento 1 (pista breve): Si detectas "no sé", "no lo sé", respuesta vacía, o respuesta muy vaga, reformula suavemente para invitar a un ejemplo ligado al objetivo.
     Formato exacto: "[Definición básica + ejemplo]. ¿[Pregunta que invita a dar otro ejemplo]?"
+    Mantén nextAction='retry' y NO marques needsAutomaticAdvance.
     Ej.: "Un peligro es algo que puede causar daño, por ejemplo una máquina sin resguardo. ¿Qué otro caso recuerdas y por qué conviene detectarlo antes de que cause problemas?"`;
     }
     if (attempts === 2) {
         return `Intento 2 (pista evidente): Incluye la definición clave completa y sólo pide que elija un ejemplo.
     Formato exacto: "[Definición completa con ejemplos]. ¿[Pregunta específica]?"
+    Mantén nextAction='retry' y NO marques needsAutomaticAdvance.
     Ej.: "Un peligro es cualquier condición capaz de causar daño (como un cable pelado). ¿Qué otro ejemplo similar puedes dar y por qué conviene detectarlo antes de que cause un accidente?"`;
     }
     return `Intento 3 (cierre/avance): Ofrecer micro-resumen + pregunta de confirmación.
   Formato exacto: "[Resumen clave]; [beneficio de la detección temprana]. ¿[Pregunta de confirmación antes de avanzar]?"
   Ej.: "Un peligro es algo que puede causar daño; identificarlo pronto nos deja aplicar controles y evitar accidentes. ¿Quieres que repasemos un ejemplo típico antes de seguir?"
-  Después de esta respuesta, entrega una pista explicita, registra la brecha y prepara el avance automatico (nextAction "advance" y needsAutomaticAdvance true).`;
+  Después de esta respuesta, entrega una pista explicita, registra la brecha, resume el objetivo pendiente y prepara el avance automatico forzando nextAction="advance" y needsAutomaticAdvance=true.`;
 }
 function buildFallbackQuestion(objective, attempts) {
     if (!objective || attempts >= 3) {

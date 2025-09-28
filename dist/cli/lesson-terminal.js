@@ -22,7 +22,7 @@ async function main() {
     }
     let session = runner.loadLesson(lesson01, randomUUID());
     console.log('==============================================');
-    console.log('Sophia Lesson Terminal - IPERC Continuo');
+    console.log(`Sophia Lesson Terminal - ${lesson01.meta.lessonName}`);
     console.log('Las imagenes no se renderizan. Abre el URL manualmente si lo deseas.');
     console.log('==============================================');
     while (!session.lessonCompleted) {

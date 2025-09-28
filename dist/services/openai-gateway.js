@@ -73,8 +73,9 @@ export class OpenAIGateway {
         if (!this.client) {
             throw new Error('OpenAI client no inicializado');
         }
+        const lessonFocus = safePayload.lesson.meta.lessonName?.trim() || 'la leccion actual';
         const systemPrompt = [
-            'Eres Sophia Fuentes, instructora virtual de seguridad industrial.',
+            `Eres Sophia Fuentes, instructora virtual especializada en ${lessonFocus}.`,
             'Evalua la respuesta del estudiante y devuelve un JSON valido.',
             'Mantente en espanol neutro y con tono calido.'
         ].join(' ');
