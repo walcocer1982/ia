@@ -2,6 +2,7 @@ import OpenAI from 'openai';
 import { z } from 'zod';
 import { lessonPlanSchema } from '../domain/lesson-plan.js';
 import { sophiaResponseSchema } from '../domain/responses.js';
+import { riskMatrixResultSchema } from '../domain/risk-matrix.js';
 import { messageTypeSchema } from '../domain/agent-messages.js';
 const conversationEntrySchema = z.object({
     role: z.union([z.literal('user'), z.literal('assistant')]),
@@ -9,8 +10,12 @@ const conversationEntrySchema = z.object({
     stepCode: z.string(),
     score: z.number().min(0).max(1).optional(),
     classification: z.string().optional(),
-    action: z.string().optional(),
-    timestamp: z.string().optional()
+    nextAction: z.string().optional(),
+    timestamp: z.string().optional(),
+    nextQuestion: z.string().optional(),
+    progressSummary: z.string().optional(),
+    weakAreas: z.array(z.string()).optional(),
+    riskMatrix: z.array(riskMatrixResultSchema).optional()
 });
 const evaluateStepRequestSchema = z.object({
     sessionId: z.string(),
@@ -79,8 +84,12 @@ export class OpenAIGateway {
             stepCode: entry.stepCode,
             score: entry.score,
             classification: entry.classification,
-            action: entry.action,
-            timestamp: entry.timestamp
+            nextAction: entry.nextAction,
+            timestamp: entry.timestamp,
+            nextQuestion: entry.nextQuestion,
+            progressSummary: entry.progressSummary,
+            weakAreas: entry.weakAreas,
+            riskMatrix: entry.riskMatrix
         }));
         const userPrompt = [
             'CONTEXTO_SESION_JSON',
@@ -103,8 +112,8 @@ export class OpenAIGateway {
             '- score: number entre 0 y 1.',
             '- nextAction: "advance"|"retry"|"clarify"|"complete".',
             '- nextQuestion (opcional).',
-            '- momentCompleted, lessonCompleted, needsAutomaticAdvance (opcional).',
-            '- progressSummary, weakAreas (opcional).',
+            '- momentCompleted, lessonCompleted, needsAutomaticAdvance (opcionales).',
+            '- progressSummary, weakAreas, riskMatrix (opcionales).',
             '',
             'No incluyas texto fuera del JSON.'
         ].join('\n');
@@ -154,8 +163,12 @@ export class OpenAIGateway {
                 stepCode: entry.stepCode,
                 score: entry.score,
                 classification: entry.classification,
-                action: entry.action,
-                timestamp: entry.timestamp
+                nextAction: entry.nextAction,
+                timestamp: entry.timestamp,
+                nextQuestion: entry.nextQuestion,
+                progressSummary: entry.progressSummary,
+                weakAreas: entry.weakAreas,
+                riskMatrix: entry.riskMatrix
             }))
         };
         const userPrompt = [

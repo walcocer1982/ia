@@ -1,5 +1,7 @@
 import { z } from 'zod';
-export const interactionLogSchema = z.object({
+import { nextActionSchema } from './responses.js';
+import { riskMatrixResultSchema } from './risk-matrix.js';
+const interactionLogBaseSchema = z.object({
     timestamp: z.string().datetime(),
     stepCode: z.string(),
     question: z.string().optional(),
@@ -7,13 +9,38 @@ export const interactionLogSchema = z.object({
     agentResponse: z.string(),
     score: z.number().min(0).max(1).optional(),
     classification: z.string().optional(),
-    action: z.union([
-        z.literal('advance'),
-        z.literal('retry'),
-        z.literal('clarify'),
-        z.literal('complete')
-    ])
+    nextAction: nextActionSchema.optional(),
+    nextQuestion: z.string().optional(),
+    momentCompleted: z.boolean().optional(),
+    lessonCompleted: z.boolean().optional(),
+    needsAutomaticAdvance: z.boolean().optional(),
+    progressSummary: z.string().optional(),
+    weakAreas: z
+        .preprocess(value => {
+        if (typeof value === 'string') {
+            const trimmed = value.trim();
+            if (!trimmed) {
+                return [];
+            }
+            return trimmed.split(/[,\n]/).map(item => item.trim()).filter(Boolean);
+        }
+        if (Array.isArray(value)) {
+            return value;
+        }
+        if (value === undefined || value === null) {
+            return undefined;
+        }
+        return value;
+    }, z.array(z.string()).optional()),
+    riskMatrix: z.array(riskMatrixResultSchema).optional()
 });
+export const interactionLogSchema = z.preprocess(value => {
+    if (value && typeof value === 'object' && !Array.isArray(value) && 'action' in value && !value.nextAction) {
+        const { action, ...rest } = value;
+        return { ...rest, nextAction: action };
+    }
+    return value;
+}, interactionLogBaseSchema);
 export const lessonSessionSchema = z.object({
     sessionId: z.string(),
     lesson: z.custom(),
