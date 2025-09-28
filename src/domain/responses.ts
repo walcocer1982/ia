@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { riskMatrixResultSchema } from './risk-matrix.js';
 
 export const evaluationClassificationSchema = z.union([
   z.literal('ACCEPT'),
@@ -40,7 +41,8 @@ export const sophiaResponseSchema = z.object({
         return undefined;
       }
       return value;
-    }, z.array(z.string()).optional())
+    }, z.array(z.string()).optional()),
+  riskMatrix: z.array(riskMatrixResultSchema).optional()
 });
 
 export type SophiaResponse = z.infer<typeof sophiaResponseSchema>;

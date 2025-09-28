@@ -34,12 +34,20 @@ export class SophiaMultiAgentService {
             question: step.question,
             answerType: step.answerType,
             lastClassification: snapshot.lastClassification,
-            lastAction: snapshot.lastAction
+            lastAction: snapshot.lastNextAction
         };
         const baseInstructions = SophiaPersonality.buildInstructions(personalityContext);
         const roleDecision = EducationalRoles.decideRoleFromInput(userInput, personalityContext);
         const roleInstructions = EducationalRoles.getInstructions(roleDecision.role, personalityContext);
         const evaluationGuidelines = buildEvaluationGuidelines(step.objective, snapshot.attempts);
+        /**
+         * Formato esperado por el evaluador automatico.
+         * Campos requeridos: chat, classification, score, nextAction.
+         * Campos opcionales: nextQuestion, momentCompleted, lessonCompleted, needsAutomaticAdvance,
+         * progressSummary, weakAreas, riskMatrix.
+         * El historial enviado al modelo utiliza InteractionLog (ver src/domain/session.ts) y mantiene los
+         * nombres exactos: classification, nextAction, history[].
+         */
         const finalInstructions = [
             baseInstructions,
             '',
@@ -53,7 +61,8 @@ export class SophiaMultiAgentService {
             '',
             'FORMATO_DE_RESPUESTA',
             'Entrega JSON valido con las claves requeridas: chat, classification, score, nextAction.',
-            'Incluye nextQuestion si planteas la siguiente pregunta y marca momentCompleted/lessonCompleted cuando aplique.'
+            'Campos opcionales segun aplique: nextQuestion, momentCompleted, lessonCompleted, needsAutomaticAdvance, progressSummary, weakAreas, riskMatrix.',
+            'Asegurate de que history siga el formato de InteractionLog y registra riskMatrix solo cuando proveas un RiskMatrixResult.'
         ].join('\n');
         const historyForModel = this.buildHistoryForModel(safeSession.history);
         const response = await this.gateway.evaluateStep({
@@ -91,7 +100,7 @@ export class SophiaMultiAgentService {
             attempts: historyForStep.length + 1,
             historyLength: session.history.length,
             lastClassification: lastEntry?.classification,
-            lastAction: lastEntry?.action
+            lastNextAction: lastEntry?.nextAction
         };
     }
     buildHistoryForModel(history) {
@@ -106,8 +115,11 @@ export class SophiaMultiAgentService {
                 stepCode: entry.stepCode,
                 score: entry.score,
                 classification: entry.classification,
-                action: entry.action,
-                timestamp: entry.timestamp
+                nextAction: entry.nextAction,
+                timestamp: entry.timestamp,
+                progressSummary: entry.progressSummary,
+                weakAreas: entry.weakAreas,
+                riskMatrix: entry.riskMatrix
             });
             if (entry.agentResponse) {
                 items.push({
@@ -116,8 +128,12 @@ export class SophiaMultiAgentService {
                     stepCode: entry.stepCode,
                     score: entry.score,
                     classification: entry.classification,
-                    action: entry.action,
-                    timestamp: entry.timestamp
+                    nextAction: entry.nextAction,
+                    timestamp: entry.timestamp,
+                    nextQuestion: entry.nextQuestion,
+                    progressSummary: entry.progressSummary,
+                    weakAreas: entry.weakAreas,
+                    riskMatrix: entry.riskMatrix
                 });
             }
         }
@@ -262,7 +278,14 @@ function applyResponseToSession(session, response, moment, step, userInput) {
         agentResponse: response.chat,
         score: response.score,
         classification: response.classification,
-        action: response.nextAction
+        nextAction: response.nextAction,
+        nextQuestion: response.nextQuestion,
+        momentCompleted: response.momentCompleted,
+        lessonCompleted: response.lessonCompleted,
+        needsAutomaticAdvance: response.needsAutomaticAdvance,
+        progressSummary: response.progressSummary,
+        weakAreas: response.weakAreas,
+        riskMatrix: response.riskMatrix
     };
     const history = [...session.history, interaction];
     let currentMomentIndex = session.currentMomentIndex;
